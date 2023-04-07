@@ -4,12 +4,12 @@ con = mysql.connector.connect(user='root', password='Manish@2701',host='localhos
 
 cursor = con.cursor()
 
-class_no = input("enter the class for which you want to create a management system for :-")
+class_no = input("enter you class for which you have to create a management system :  ")
 
-cursor.execute(f"create database class{class_no};")
+cursor.execute("create database classes;")
 
-cursor.execute(f"use class{class_no};")
+cursor.execute("use classes;")
 
-cursor.execute("create table students (roll_no int(10), name varchar(30), gender varchar(10);")
+cursor.execute(f"create table class{class_no} (roll_no int(10) primary key, name varchar(30), gender varchar(10));")
 
 
