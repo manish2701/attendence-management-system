@@ -31,7 +31,7 @@ def show_list_of_students():
             else:
                 print(' '*2,col,end='\t|')
 
-                
+
     while 2>1:
         return_input = int(input("\nPress 1 to return to dashboard : "))
 
@@ -41,20 +41,43 @@ def show_list_of_students():
         else:
             None
 
+
+
+def edit_list_of_students():
+    print("\n=====List Of Students=====")
+    print("1. add a student")
+    print("2. remove a student")
+    print("3. update data")
+    print("4. exit \n")
+
+    list_input = int(input("Enter the task number you want to do : "))
+
+    if list_input==1:
+        add_student()
+    elif list_input==2:
+        remove_student()
+    elif list_input==3:
+        None
+    elif list_input==4:
+        dashboard()
+
 def add_student():
     global name,roll_no,roll_lst,gender
-    print()
-    print("Enter details of the student below : \n")
+
+    print("\nEnter details of the student below : \n")
 
     roll_no = int(input("roll number = "))
 
     cursor.execute(f"select * from class{class_no}")
     roll_lst = cursor.fetchall()
 
+
     for i in roll_lst:
         if roll_no==i[0]:
             print("This roll number already exists\n")
-            break
+            add_student()
+        else:
+            None
         
     name = input("Name = ")
 
@@ -71,28 +94,39 @@ def add_student():
 
     cursor.execute(f"insert into class{class_no} values({roll_no},'{name}','{gender}');")
     con.commit()
+
     print("Your student details have been added")
+
     edit_list_of_students()
 
+def remove_student():
+    global roll_no,name
 
-def edit_list_of_students():
-    print("\n=====List Of Students=====")
-    print("1. add a student")
-    print("2. remove a student")
-    print("3. update data")
-    print("4. exit \n")
 
-    list_input = int(input("Enter the task number you want to do : "))
+    cursor.execute(f"select * from class{class_no};")
+    rows=cursor.fetchall()
 
-    if list_input==1:
-        add_student()
-    elif list_input==2:
-        None
-    elif list_input==3:
-        None
-    elif list_input==4:
-        dashboard
+    print("Roll No |          Name         ")
 
+    for row in rows:
+        for col in row:
+            if col == row[-1]:
+                break
+            if col == row[1]:
+                print(f'    {col.title()}')
+            else:
+                print(' '*2,col,end='\t|')
+
+    print("\nEnter detail of student you want to remove : \n")
+
+    roll_no = input("roll number = ")
+
+    name = input("name = ")
+
+    print(f"\nstudent data has been deleted where \n\nroll number is \t{roll_no} \nname is \t{name}")
+
+    cursor.execute(f"delete from class{class_no} where roll_no={roll_no} and name='{name}';")
+    con.commit()
 
 def dashboard():
     print("\n======DASHBOARD======\n")
