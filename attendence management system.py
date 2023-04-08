@@ -1,3 +1,4 @@
+
 from datetime import date
 import mysql.connector
 
@@ -57,7 +58,7 @@ def edit_list_of_students():
     elif list_input==2:
         remove_student()
     elif list_input==3:
-        None
+        update_student()
     elif list_input==4:
         dashboard()
 
@@ -100,7 +101,7 @@ def add_student():
     edit_list_of_students()
 
 def remove_student():
-    global roll_no,name
+    global roll_no,name,check
 
 
     cursor.execute(f"select * from class{class_no};")
@@ -121,12 +122,75 @@ def remove_student():
 
     roll_no = input("roll number = ")
 
+    cursor.execute(f"select * from class{class_no} where roll_no = '{roll_no}';")
+    check = cursor.fetchone()
+
+    if check is not None:
+        None
+    else:
+        remove_student()
+
     name = input("name = ")
 
     print(f"\nstudent data has been deleted where \n\nroll number is \t{roll_no} \nname is \t{name}")
 
     cursor.execute(f"delete from class{class_no} where roll_no={roll_no} and name='{name}';")
     con.commit()
+
+def update_student():
+    global roll_no,name
+
+    print("Enter detail of student for which you have to update data :")
+    roll_no = input("roll number = ")
+
+    cursor.execute(f"select * from class{class_no} where roll_no = '{roll_no}';")
+    check = cursor.fetchone()
+
+    if check is not None:
+        None
+    else:
+        print("\nEnter a roll number which is associated with a student")
+        cursor.execute(f"select * from class{class_no};")
+        rows=cursor.fetchall()
+
+        print("\nRoll No |          Name         ")
+
+        for row in rows:
+            for col in row:
+                if col == row[-1]:
+                    break
+                if col == row[1]:
+                    print(f'    {col.title()}')
+                else:
+                    print(' '*2,col,end='\t|') 
+
+        update_student()   
+
+    name = input("name = ")
+
+    print("\nEnter the NEW DETAILS of the student : ")
+
+    new_roll_no = input("roll number = ")
+
+    cursor.execute(f"select * from class{class_no} where roll_no = '{new_roll_no}';")
+    check = cursor.fetchone()
+
+    if check is not None:
+        cursor.execute(f"select name from class{class_no} where roll_no = '{new_roll_no}'")
+        exist_name = cursor.fetchall()
+        for i in exist_name:
+            for j in i:
+                the_name = j
+        print(f"This roll number is occupied by {the_name}\n")
+
+        update_student()
+    else:
+        None
+
+    new_name = input("name = ")
+
+    cursor.execute(f"update class{class_no} set ")
+
 
 def dashboard():
     print("\n======DASHBOARD======\n")
