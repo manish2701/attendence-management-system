@@ -1,4 +1,3 @@
-
 from datetime import date
 import mysql.connector
 
@@ -11,7 +10,10 @@ cursor = con.cursor()
 class_no = input("Enter your class number : ")
 
 #gets today's date
-today = date.today()
+tod = date.today()
+toda = str(tod)
+#so that it can be used as a table name
+today= toda.replace('-','_')
 
 def show_list_of_students():
     print()
@@ -137,6 +139,8 @@ def remove_student():
     cursor.execute(f"delete from class{class_no} where roll_no={roll_no} and name='{name}';")
     con.commit()
 
+    dashboard()
+
 def update_student():
     global roll_no,name,rollno
 
@@ -208,7 +212,74 @@ def update_student():
     con.commit()
     dashboard()
 
+def take_attendence():
 
+    cursor.execute("show tables;")
+    tb_lst = cursor.fetchall()
+    tb_name = f"{today}"
+
+    if (tb_name,) in tb_lst:
+        None
+    else:
+        cursor.execute(f"create table {today} (roll_no int(10) primary key,name varchar(30));")
+
+        cursor.execute(f"insert into {today} select roll_no,name from class{class_no};")
+        cursor.execute(f"alter table {today} add column presence varchar(10);")
+        con.commit()
+
+    cursor.execute(f"select * from class{class_no};")
+    rows=cursor.fetchall()
+
+    print("\nRoll No |          Name         ")
+
+    for row in rows:
+        for col in row:
+            if col == row[-1]:
+                break
+            elif col == row[1]:
+                print(f'    {col.title()}')
+                status = int(input("\n1. present \n2. absent \nEnter his presence : "))
+                if status==1:
+                    cursor.execute(f"update {today} set presence = 'present' where roll_no = {row[0]};")
+                elif status==2:
+                    cursor.execute(f"update {today} set presence = 'absent' where roll_no = {row[0]};")
+            else:
+                print('\n',' '*2,col,end='\t|') 
+    con.commit()
+    print("\nyou have successfully taken the attendance\n")
+    dashboard()
+
+def show_attendence():
+    print()
+    db_dat = input("Enter the date for which you want to see attendence \n'yyyy-mm-dd' : )")
+    db_date = db_dat.replace('-','_')
+
+    cursor.execute(f"select * from {db_date};")
+    rows=cursor.fetchall()
+    
+    print("your list of students is below :\n")
+
+    print(f"Roll No |          Name         |         {db_date}")
+
+    for row in rows:
+        for col in row:
+            #max_length = max(len(row[i]) for i in row)
+            if col == row[-1]:
+                print(f'                   {col}')
+            elif col == row[1]:
+                print(f'    {col.title()}',end='')
+            else:
+                print(' '*2,col,end='\t|')
+
+
+    while 2>1:
+        return_input = int(input("\nPress 1 to return to dashboard : "))
+
+        if return_input==1:
+            dashboard()
+            break
+        else:
+            None
 
 
 def dashboard():
@@ -224,6 +295,10 @@ def dashboard():
         show_list_of_students()
     elif main_input==2:
         edit_list_of_students()
+    elif main_input==3:
+        take_attendence()
+    elif main_input==4:
+        show_attendence()
         
 
 dashboard()
