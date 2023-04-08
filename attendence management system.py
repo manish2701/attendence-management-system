@@ -98,7 +98,7 @@ def add_student():
 
     print("Your student details have been added")
 
-    edit_list_of_students()
+    dashboard()
 
 def remove_student():
     global roll_no,name,check
@@ -138,7 +138,7 @@ def remove_student():
     con.commit()
 
 def update_student():
-    global roll_no,name
+    global roll_no,name,rollno
 
     print("Enter detail of student for which you have to update data :")
     roll_no = input("roll number = ")
@@ -168,28 +168,47 @@ def update_student():
 
     name = input("name = ")
 
-    print("\nEnter the NEW DETAILS of the student : ")
+    def rollno():
+        global new_roll_no
+        print("\nEnter the NEW DETAILS of the student : ")
 
-    new_roll_no = input("roll number = ")
+        new_roll_no = int(input("roll number = "))
 
-    cursor.execute(f"select * from class{class_no} where roll_no = '{new_roll_no}';")
-    check = cursor.fetchone()
+        cursor.execute(f"select * from class{class_no} where roll_no = {new_roll_no};")
+        check = cursor.fetchone()
 
-    if check is not None:
-        cursor.execute(f"select name from class{class_no} where roll_no = '{new_roll_no}'")
-        exist_name = cursor.fetchall()
-        for i in exist_name:
-            for j in i:
-                the_name = j
-        print(f"This roll number is occupied by {the_name}\n")
+        if check is not None:
+            cursor.execute(f"select name from class{class_no} where roll_no = {new_roll_no}")
+            exist_name = cursor.fetchall()
+            for i in exist_name:
+                for j in i:
+                    the_name = j
+            print(f"This roll number is occupied by {the_name}\n")
+            rollno()
+        else:
+            None
 
-        update_student()
-    else:
-        None
+    rollno()
 
     new_name = input("name = ")
+        
+    print("\nGenders :- ")
+    print("1. male")
+    print("2. female")
 
-    cursor.execute(f"update class{class_no} set ")
+    gen = int(input("Enter your gender number : "))
+
+    if gen==1:
+        new_gender = "male"
+    elif gen==2:
+        new_gender  = "female"
+
+    cursor.execute(f"update class{class_no} set roll_no = {new_roll_no}, name = '{new_name}', gender = '{new_gender}' where roll_no = {roll_no} or name = '{name}';")
+
+    con.commit()
+    dashboard()
+
+
 
 
 def dashboard():
