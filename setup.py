@@ -29,6 +29,8 @@ tb_name = f"class{class_no}"
 if (tb_name,) in tb_lst:
     None
 else:
-    cursor.execute(f"create table class{class_no} (roll_no int(10) primary key, name varchar(30), gender varchar(10));")
 
+    cursor.execute(f"CREATE TABLE class{class_no} (roll_no INT,name VARCHAR(30), gender VARCHAR(10) ,PRIMARY KEY (roll_no, name));")
+
+    print(f"You have successfuly created a system for class {class_no}")
 
